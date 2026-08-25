@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- **Search and scanning are now documented in the README.** Roughly half the engine was
+  invisible to anyone discovering the project. Stated honestly: `board_scan.py` performs zero
+  network I/O, there is no crawler, and nothing runs on a timer unless you schedule it.
+- **Fixed: a board list shipped inside the engine.** `board_scan.py` hardcoded 21 board slugs
+  and a staleness threshold, so a new user was warned about companies they had never heard of.
+  Moved to `config/search.json` → `boards.core`, shipped empty. Found by verifying a README
+  claim against the running code rather than trusting it.
+- **Fixed: `python-docx` was undocumented** despite being required to generate any document.
+- README now leads with a runnable 60-second demo, a rendered sample, real audit output, and a
+  real guardrail refusal.
+
 ## v1.0.0 — 2026-08-24
 
 First complete release. The engine generates a full application package from structured
