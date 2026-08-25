@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- **Outcome loop.** `/outcome` records what happened to an application and
+  `engine/lib/calibrate.py` reports whether the fit verdict, source channel, or outreach had any
+  observed relationship with advancing. Wired into `/refresh` and `/followups`.
+- **An outcome vocabulary** (`engine/lib/outcomes.py`, 31 tests). The registry used one status
+  for both "we passed on them" and "they passed on us"; conflating those inverts the meaning of
+  every conversion rate. Legacy rows are classified from status and note text, and anything
+  genuinely ambiguous returns UNKNOWN for a human rather than being guessed.
+- **Source-channel normalisation.** Free-text `source` had drifted into ~25 spellings of about
+  six real channels, which made the comparison unreadable at any sample size.
+- `calibrate.py` **refuses to overclaim**: splits too thin to read are labelled INSUFFICIENT
+  EVIDENCE with the arithmetic shown and the sample size that would be needed.
+
 - **Search and scanning are now documented in the README.** Roughly half the engine was
   invisible to anyone discovering the project. Stated honestly: `board_scan.py` performs zero
   network I/O, there is no crawler, and nothing runs on a timer unless you schedule it.
