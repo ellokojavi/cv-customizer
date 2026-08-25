@@ -41,6 +41,7 @@ INCLUDE = [
     ("LICENSE", "LICENSE"),
     ("VERSION", "VERSION"),
     ("engine", "engine"),
+    ("docs", "docs"),
     ("profile.example", "profile.example"),
     (".claude/commands", ".claude/commands"),
     (".claude/settings.example.json", ".claude/settings.example.json"),
@@ -105,9 +106,18 @@ def text_of(path):
         return None
 
 
-def scan(tree, terms):
-    """[(relpath, [terms found])] plus files that could not be read."""
+def scan(tree, terms, allow=()):
+    """[(relpath, [terms found])] plus files that could not be read.
+
+    `allow` holds reviewed exceptions - a match whose surrounding window matches
+    one of them is exonerated. It exists for the same reason the CV guardrails
+    have `allow_context`: the public repository's own URL contains the author's
+    GitHub handle, which is a legitimate use of a term that is otherwise an
+    identity leak. The fix for a false positive is a narrower pattern, never
+    deleting the content that tripped it.
+    """
     rx = re.compile("|".join(terms), re.IGNORECASE)
+    allow_rx = [re.compile(a, re.IGNORECASE) for a in allow]
     hits, unreadable = [], []
     for base, dirs, files in os.walk(tree):
         dirs[:] = [d for d in dirs if d not in SKIP_NAMES]
@@ -118,9 +128,14 @@ def scan(tree, terms):
             if body is None:
                 unreadable.append(rel)
                 continue
-            found = sorted({m.group(0).lower() for m in rx.finditer(body)})
+            found = set()
+            for m in rx.finditer(body):
+                window = body[max(0, m.start() - 60):m.end() + 60]
+                if any(a.search(window) for a in allow_rx):
+                    continue
+                found.add(m.group(0).lower())
             if found:
-                hits.append((rel, found))
+                hits.append((rel, sorted(found)))
     return hits, unreadable
 
 
@@ -161,7 +176,8 @@ def main():
     ap.add_argument("--force", action="store_true", help="overwrite a non-empty destination")
     args = ap.parse_args()
 
-    terms = json.load(open(args.denylist))["terms"]
+    _dl = json.load(open(args.denylist))
+    terms, allow = _dl["terms"], _dl.get("allow", [])
     dest = os.path.abspath(args.to)
 
     if not args.check_only:
@@ -176,7 +192,7 @@ def main():
         n = sum(len(f) for _, _, f in os.walk(dest))
         print(f"assembled {n} files into {dest}")
 
-    hits, unreadable = scan(dest, terms)
+    hits, unreadable = scan(dest, terms, allow)
 
     if unreadable:
         print(f"\nCOULD NOT READ {len(unreadable)} file(s) - cannot certify these:")
