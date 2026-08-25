@@ -45,6 +45,10 @@ CASES = [
     ("expired", "", OC.WE_DECLINED, "never decided, so never applied"),
     ("", "assessed, partial fit", OC.WE_DECLINED, "no status: never progressed"),
 
+    # "off-core" is the same idea as "off-domain" and was missed by the pattern.
+    ("rejected", "off-core B2B agreements domain, not defensible",
+     OC.WE_DECLINED, "we passed on domain, phrased differently"),
+
     # --- genuinely ambiguous must stay UNKNOWN ----------------------------
     ("closed", "partial fit; strong consumer fintech growth",
      OC.UNKNOWN, "describes the FIT, says nothing about what happened"),
@@ -89,6 +93,17 @@ def main():
             failures.append(f"source {raw!r}: expected {expected}, got {got}")
         print(f"  {'ok  ' if ok else 'BAD '} {raw or '(empty)':<36} -> {got}")
 
+    # You cannot be rejected by an employer you never applied to, and you cannot
+    # apply without a CV. So an ambiguous status plus no CV and no application is
+    # a self-decline by construction, not a guess.
+    no_cv = {"status": "rejected", "notes": "some note with no decisive wording",
+             "applied": "FALSE", "cv_generated": "FALSE"}
+    got, conf = OC.classify(no_cv)
+    print(f"\n  {'ok  ' if got == OC.WE_DECLINED else 'BAD '} no CV + not applied "
+          f"-> {got} [{conf}]  (cannot be rejected by someone you never applied to)")
+    if got != OC.WE_DECLINED:
+        failures.append("ambiguous status with no CV and no application must be WE_DECLINED")
+
     # A property worth asserting directly: a self-decline must never be counted
     # as a submitted application, or every conversion rate is understated.
     if OC.submitted(OC.WE_DECLINED):
@@ -98,7 +113,7 @@ def main():
     if OC.submitted(OC.UNKNOWN):
         failures.append("UNKNOWN must not be counted in either direction")
 
-    total = len(CASES) + len(SOURCE_CASES) + 3
+    total = len(CASES) + len(SOURCE_CASES) + 4
     print(f"\n  {total - len(failures)}/{total} passed")
     for f in failures:
         print(f"    {f}")

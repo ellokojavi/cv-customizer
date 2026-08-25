@@ -64,7 +64,7 @@ _NOTE_RULES = [
                         r"role (?:filled|cancelled)|no longer (?:listed|posted)"),
     (GHOSTED,           r"never replied|no response|no reply|cold, clos|went cold|"
                         r"silence"),
-    (WE_DECLINED,       r"off-domain|off-categ|off-lane|location gap|location fail|"
+    (WE_DECLINED,       r"off-domain|off-core|off-categ|off-lane|location gap|location fail|"
                         r"not wa-eligible|relocation|declined|passed at triage|"
                         r"chose not to|not worth|do not surface|do-not-resurface|"
                         r"do not resurface|auto-expired|title stretch|too junior|too senior"),
@@ -98,6 +98,16 @@ def classify(row):
         for outcome, pattern in _NOTE_RULES:
             if re.search(pattern, notes):
                 return outcome, "note"
+
+        # No decisive note. Two flags can still settle it by logic rather than
+        # by guessing: you cannot be rejected by an employer you never applied
+        # to, and you cannot apply without a CV. When both say no application
+        # happened, this is a self-decline by construction.
+        applied = (row.get("applied") or "").strip().upper()
+        cv = (row.get("cv_generated") or "").strip().upper()
+        if applied == "FALSE" and cv == "FALSE":
+            return WE_DECLINED, "inferred"
+
         return UNKNOWN, "weak"
 
     if not status:
