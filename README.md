@@ -104,6 +104,52 @@ vanishes. Generating from your profile removes that bug class instead of auditin
 surfaces stale applications so they get an outreach attempt instead of rotting — because the
 response rate, not the application count, is what actually binds.
 
+---
+
+## Finding roles, not just applying to them
+
+`/daily-search` sweeps your configured sources and surfaces only what is genuinely new. Roughly
+half the engine is this half.
+
+**Delta scanning, so a sweep is cheap.** Senior roles trickle. Re-reading the same 200-job boards
+every day produces repeated zeros and real cost, so `board_scan.py` remembers the posting-ID set
+per board and reports only what appeared since last time. It auto-detects the Greenhouse, Ashby,
+and Lever JSON shapes.
+
+```bash
+python3 engine/lib/board_scan.py diff acme --json board.json   # prints only the NEW postings
+python3 engine/lib/board_scan.py status                        # per-board age + staleness warnings
+```
+
+**Filters applied before you spend attention.** Level, seniority-equivalence for borderline
+titles, compensation floor, geography, and domain priority all come from `config/search.json`.
+Geography is a *hard* filter: a role that fails it is out regardless of how good the domain fit
+is, because the alternative is spending real effort on jobs you cannot take.
+
+**One pipeline for everything.** Dedup → verify live in a browser → assess → log. No shortcuts
+by source, because unverified postings are worse than none: aggregators synthesize titles and
+locations outright, and a 404 costs you the assessment twice.
+
+**Coverage is provable or it did not happen.** Every scan ends by recording its IDs, and `status`
+warns on boards gone stale. An untracked scan is indistinguishable from a skipped one — which is
+how a search quietly narrows to whichever companies have convenient APIs.
+
+### What this is *not*
+
+**There is no crawler.** `board_scan.py` performs **zero network I/O**. It is a delta-state
+tracker: the agent reads each board in a real browser and feeds the results in. Nothing runs on a
+timer unless you schedule it yourself, and nothing scrapes behind a login.
+
+**No company list ships.** `engine/templates/board_library.md` gives you the tier model, the five
+bars for a top-tier board, ATS endpoint patterns, and how to find an endpoint that supposedly
+does not exist — but you build your own list. A curated set of employers is specific to one
+field, level, and metro; inheriting someone else's looks like coverage while pointing at the
+wrong market.
+
+That is a deliberate trade, and it is the weaker half of the system. If you want fully automated
+job discovery, this is not that. If you want a search that never double-assesses a posting,
+never quietly drops a source, and refuses to surface roles you cannot actually take, it is.
+
 ## What it does not do
 
 It does not apply for you, auto-send email, or scrape behind logins. It does not guarantee
