@@ -37,7 +37,9 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 INCLUDE = [
     ("README.md", "README.md"),
     ("QUICKSTART.md", "QUICKSTART.md"),
+    ("CHANGELOG.md", "CHANGELOG.md"),
     ("LICENSE", "LICENSE"),
+    ("VERSION", "VERSION"),
     ("engine", "engine"),
     ("profile.example", "profile.example"),
     (".claude/commands", ".claude/commands"),

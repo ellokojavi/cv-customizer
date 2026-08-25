@@ -86,11 +86,36 @@ whether any of this is worth running, and it deserves a real half hour.
 
 | Command | What it does |
 |---|---|
+| `/setup [cv.docx]` | Guided first run: build the profile and config, ending in a clean audit |
 | `/jd <url>` | Assess a posting; if it is a strong fit, build the full package |
 | `/daily-search` | Run the full search sweep across every configured source |
 | `/followups` | Post-application worklist: due actions, stale applies, outreach drafts |
 | `/reaudit <company>` | Re-check a built-but-unsent package against current rules |
 | `/hygiene` | Sweep for build junk, damaged files, and structural rot |
+| `/refresh` | Periodic maintenance so the profile, boards, and packages do not rot |
+
+## The tools underneath
+
+Every command is ordinary Python you can run yourself.
+
+```bash
+python3 engine/lib/build_package.py --app app.json    # the whole set, gated on the audit
+python3 engine/lib/check_cv.py "<folder>" [--jd jd.txt]
+python3 engine/lib/check_cv_tests.py                  # guardrail regression suite
+
+python3 engine/lib/build_cv.py -o cv.docx [--tailor t.json]
+python3 engine/lib/build_cover_letter.py --letter l.json -o letter.docx
+python3 engine/lib/build_outreach.py --plan p.json -o "outreach plan.md"
+python3 engine/lib/extract_career.py <existing_cv.docx> -o profile/career.json
+
+python3 engine/lib/registry.py check|add|applied|followups|expire|sync
+python3 engine/lib/board_scan.py diff <slug> --ids "…" | status
+python3 engine/lib/publish.py --to ../public-copy    # assemble + refuse on any leak
+```
+
+`build_package.py` is the one that matters: it generates everything in a scratch directory and
+copies it into the application folder **only if the audit passes**. A package that does not audit
+clean should not exist somewhere you can send it by accident.
 
 ## Privacy
 

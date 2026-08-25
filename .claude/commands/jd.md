@@ -17,12 +17,21 @@ Follow `CLAUDE.md` and `_system/AGENT_CONTEXT.md` exactly. Filters come from
 6. **Apply the build trigger.** Strong -> build immediately (CV + cover letter, DOCX + PDF) and scout direct outreach. Partial -> ask, then add to the triage batch. Poor -> log with a do-not-resurface note.
 7. **Log it:** `registry.py add` with the live URL, source, fit, and an honest one-line gap note. Never leave `--source` blank.
 
-If you build: work in `/tmp/cvbuild`, copy the newest JD folder's CV as the base, and rebuild every hyperlink from `profile/links.json` rather than trusting the inherited base.
-
-**The build is not done until the auditor exits 0:**
+**If you build, use the package builder — do not assemble by hand:**
 
 ```bash
-python3 engine/lib/check_cv.py "<job folder>" --jd /tmp/cvbuild/jd.txt
+python3 engine/lib/build_package.py --app /tmp/cvbuild/app.json
 ```
 
-Fix every FAIL and re-run; report the final summary line. Do not tell me it is done off a hand-check.
+Write `app.json` with the company, role, date, live URL, the JD file path, your cover-letter
+paragraphs, and whatever outreach research you gathered. It generates the CV, cover letter, and
+outreach plan, converts both to PDF, writes the `.webloc`, and **audits the result — copying
+nothing into the application folder unless `check_cv.py` passes.** A package that does not audit
+clean should not exist somewhere it can be sent by accident.
+
+Everything happens in a scratch directory, so no build junk can land in the folder. If it fails,
+it says where the partial package is; fix the FAILs and re-run. Report the final audit summary,
+never a hand-check.
+
+You still write the cover-letter paragraphs and do the outreach research — the builder guarantees
+the packaging, not the judgement.
