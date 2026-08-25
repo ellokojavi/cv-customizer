@@ -104,6 +104,53 @@ def match(rows, query, company=None, role=None, url=None, job_id=None, folder=No
         if len(live) == 1: return live[0]
     return None
 
+def match_candidates(rows, query):
+    """Every row a company-only query could plausibly mean."""
+    q = (query or "").strip().lower().rstrip("!")
+    if not q:
+        return []
+    return [r for r in rows
+            if r["company"] and r["company"].lower().rstrip("!") == q]
+
+
+def resolve_for_write(rows, query, action="modify"):
+    """Match a row for a MUTATING command, refusing to guess between candidates.
+
+    `match()` has a convenience fallback: when several rows share a company it
+    picks the single non-terminal one. That is fine for a dedup CHECK and
+    actively dangerous for a write - it silently mutated the wrong row of two
+    same-company applications, appending a rejection to a role that had never
+    been applied to. A read that guesses wrong costs a second look; a write
+    that guesses wrong corrupts the record it was meant to correct.
+
+    Exact matches (job_id, url, folder) still win. A company-only query that
+    could mean more than one row stops and asks.
+    """
+    exact = match(rows, query, url=query)
+    cands = match_candidates(rows, query)
+    if len(cands) > 1:
+        qn = norm_url(query)
+        q = (query or "").lower()
+        decisive = (any(r["job_id"] and r["job_id"] == query for r in cands)
+                    or (qn and any(r["url"] and norm_url(r["url"]) == qn for r in cands))
+                    or any(r["jd_folder"] and r["jd_folder"].lower() == q for r in cands))
+        if not decisive:
+            print(f'AMBIGUOUS: {len(cands)} rows match "{query}". '
+                  f"Refusing to {action} one of them by guessing.\n")
+            for r in cands:
+                print(f"  - {r['role_title']}")
+                print(f"      status={r['status'] or '(open)'}  applied={r['applied']}  "
+                      f"id={r['job_id'] or '(none)'}")
+                if r["jd_folder"]:
+                    print(f"      folder={r['jd_folder']}")
+            print("\nRe-run with the job_id, the full posting URL, or the exact folder name.")
+            # Exit here rather than returning None: callers print "No match found",
+            # which is the opposite of the actual problem and would send someone
+            # looking for a missing row instead of choosing between two.
+            sys.exit(2)
+    return exact
+
+
 def parse_folder(name):
     m = re.match(r"^(\d{8})\s+(.*)$", name)
     date = ""; rest = name
@@ -182,7 +229,7 @@ def cmd_add(args):
 
 def cmd_applied(args):
     rows = load()
-    r = match(rows, args.query, url=args.query)
+    r = resolve_for_write(rows, args.query, "mark applied")
     if not r:
         print("No match found. Use exact url, job_id, folder, or 'Company Role'."); sys.exit(1)
     r["applied"] = "TRUE"; r["applied_date"] = args.date or today()
@@ -198,7 +245,7 @@ def cmd_applied(args):
 
 def _set_status(args, status, label, default_note):
     rows = load()
-    r = match(rows, args.query, url=args.query)
+    r = resolve_for_write(rows, args.query, "close")
     if not r:
         print("No match found. Use exact url, job_id, folder, or 'Company Role'."); sys.exit(1)
     r["status"] = status; r["status_date"] = args.date or today()
@@ -219,7 +266,7 @@ def cmd_cancel(args):
 
 def cmd_reopen(args):
     rows = load()
-    r = match(rows, args.query, url=args.query)
+    r = resolve_for_write(rows, args.query, "reopen")
     if not r:
         print("No match found."); sys.exit(1)
     r["status"] = ""; r["status_date"] = ""
@@ -230,7 +277,7 @@ def cmd_reopen(args):
 
 def cmd_cvdone(args):
     rows = load()
-    r = match(rows, args.query, url=args.query)
+    r = resolve_for_write(rows, args.query, "update")
     if not r:
         print("No match found."); sys.exit(1)
     r["cv_generated"] = "TRUE"
@@ -265,7 +312,7 @@ TERMINAL = ("rejected","cancelled","expired","closed")
 def cmd_outreach(args):
     """Append an outreach event to a row's outreach_status log."""
     rows = load()
-    r = match(rows, args.query, url=args.query)
+    r = resolve_for_write(rows, args.query, "log outreach on")
     if not r:
         print("No match found."); sys.exit(1)
     stamp = f"{args.note} ({args.date or today()})"
@@ -281,7 +328,7 @@ def cmd_outreach(args):
 
 def cmd_nextaction(args):
     rows = load()
-    r = match(rows, args.query, url=args.query)
+    r = resolve_for_write(rows, args.query, "set an action on")
     if not r:
         print("No match found."); sys.exit(1)
     r["next_action"] = args.action or ""
@@ -292,7 +339,7 @@ def cmd_nextaction(args):
 def cmd_setstatus(args):
     """Free-form pipeline stage: recruiter_screen, onsite, offer, closed, ..."""
     rows = load()
-    r = match(rows, args.query, url=args.query)
+    r = resolve_for_write(rows, args.query, "set the status of")
     if not r:
         print("No match found."); sys.exit(1)
     r["status"] = args.to; r["status_date"] = args.date or today()
