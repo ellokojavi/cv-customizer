@@ -1,0 +1,107 @@
+{
+  "_layer": "IDENTITY (EXAMPLE). Fixtures for the generic harness in engine/lib/check_cv_tests.py.",
+  "_why": "The harness is method and ships with the engine; these cases are one person's career facts and do not. Every guardrail should have at least one case that fires and one that must NOT, because a rule you have only tested in the firing direction is a rule you will end up deleting the first time it cries wolf.",
+  "_working_rule": "Every false positive found on a real package gets added here BEFORE the pattern in guardrails.json is loosened.",
+  "_schema": {
+    "text": "input",
+    "should_fail": "true if a guardrail must fire",
+    "why": "one-line rationale"
+  },
+  "cases": [
+    {
+      "text": "I am applying for the VP, Data Platform role at Acme.",
+      "should_fail": false,
+      "why": "names the role applied for"
+    },
+    {
+      "text": "Re: Vice President, Data Engineering position",
+      "should_fail": false,
+      "why": "subject line names the target role"
+    },
+    {
+      "text": "Partnered with VP stakeholders across three business units.",
+      "should_fail": false,
+      "why": "VP as stakeholder, not title held"
+    },
+    {
+      "text": "As a VP of Data Platform, I owned the roadmap.",
+      "should_fail": true,
+      "why": "self-label above the title ceiling"
+    },
+    {
+      "text": "I would bring VP-level judgment to the role.",
+      "should_fail": true,
+      "why": "'VP-level' is still a self-label"
+    },
+    {
+      "text": "Cut infrastructure spend by ~$250K/yr.",
+      "should_fail": false,
+      "why": "defensible figure"
+    },
+    {
+      "text": "Cut infrastructure spend by $500K/yr.",
+      "should_fail": true,
+      "why": "stale figure"
+    },
+    {
+      "text": "Built batch pipelines on Airflow and dbt.",
+      "should_fail": false,
+      "why": "actually used"
+    },
+    {
+      "text": "Built streaming pipelines on Kafka and Flink.",
+      "should_fail": true,
+      "why": "never used hands-on"
+    },
+    {
+      "text": "Owned the P&L for the platform org.",
+      "should_fail": true,
+      "why": "someone else owned it"
+    },
+    {
+      "text": "To be clear, I have not owned a P&L.",
+      "should_fail": false,
+      "why": "explicit disclaimer"
+    },
+    {
+      "text": "Shipped Nightjar to 400 analysts.",
+      "should_fail": true,
+      "why": "undefined internal codename"
+    },
+    {
+      "text": "Shipped Nightjar, our internal data catalog, to 400 analysts.",
+      "should_fail": false,
+      "why": "defined at first mention"
+    },
+    {
+      "text": "Data leader with 12 years across platform and analytics.",
+      "should_fail": false,
+      "why": "canonical tenure"
+    },
+    {
+      "text": "Data leader with 9 years across platform and analytics.",
+      "should_fail": true,
+      "why": "inconsistent tenure"
+    },
+    {
+      "text": "Mar 2021 - Present",
+      "should_fail": true,
+      "why": "banned word"
+    },
+    {
+      "text": "Mar 2021 - Aug 2026",
+      "should_fail": false,
+      "why": "configured format"
+    },
+    {
+      "text": "Built the ingestion framework handling 1.2B rows/day; still in production 10 years later.",
+      "should_fail": false,
+      "why": "'10 years later' is a system's lifetime, not the candidate's tenure"
+    },
+    {
+      "text": "Cut costs 38% over 3 years of platform work.",
+      "should_fail": false,
+      "why": "duration of a project, not a tenure claim"
+    }
+  ]
+}

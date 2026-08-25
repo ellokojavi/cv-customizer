@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": [
+    "ENVIRONMENT layer. Copy to settings.json and replace <PROJECT_ROOT> with the",
+    "absolute path of your own checkout - permission rules are matched literally, so",
+    "a relative path will not work. Everything else here is portable as written.",
+    "",
+    "Note: Edit(path) rules cover ALL file-editing tools (Write, Edit, NotebookEdit).",
+    "A Write(path) rule is silently ignored by the file-permission layer."
+  ],
+  "permissions": {
+    "allow": [
+      "Read(//<PROJECT_ROOT>/**)",
+      "Edit(//<PROJECT_ROOT>/**)",
+      "Read(//tmp/**)",
+      "Edit(//tmp/**)",
+      "Bash(python3 registry.py:*)",
+      "Bash(python3 board_scan.py:*)",
+      "Bash(python3 _registry/registry.py:*)",
+      "Bash(python3 _registry/board_scan.py:*)",
+      "Bash(python3 engine/lib/check_cv.py:*)",
+      "Bash(python3 engine/lib/check_cv_tests.py:*)",
+      "Bash(soffice:*)",
+      "Bash(pdftoppm:*)",
+      "Bash(pdfinfo:*)",
+      "Bash(unzip -tqq:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(rclone:*)",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(git push:*)",
+      "Read(./**/.env)"
+    ]
+  },
+  "env": {
+    "CV_PROJECT_ROOT": "<PROJECT_ROOT>"
+  }
+}
