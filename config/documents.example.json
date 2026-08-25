@@ -132,9 +132,9 @@
       "*prep*.md",
       "*prep*.docx",
       "*prep*.pdf",
-      "*answers*.md",
-      "*answers*.docx",
-      "*answers*.pdf",
+      "*answer*.md",
+      "*answer*.docx",
+      "*answer*.pdf",
       "*notes*.md"
     ],
     "junk_globs": [
