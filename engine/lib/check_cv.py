@@ -617,7 +617,14 @@ def main():
     ap.add_argument("--profile", default=DEFAULT_PROFILE,
                     help="identity layer (default: profile/)")
     ap.add_argument("--json", action="store_true", help="emit JSON instead of a table")
+    ap.add_argument("--version", action="store_true", help="print the engine version and exit")
     args = ap.parse_args()
+
+    if args.version:
+        sys.path.insert(0, HERE)
+        import paths as _p
+        print(f"cv-customizer {_p.version()}")
+        return 0
 
     if not args.folder and not args.cv:
         ap.error("give a job folder or --cv")

@@ -50,6 +50,15 @@ CONFIG_DIR = os.path.join(PROJECT_ROOT, "config")
 PROFILE_DIR = os.path.join(PROJECT_ROOT, "profile")
 
 
+def version():
+    """The engine's version string, or 'unknown' outside a checkout."""
+    try:
+        with open(os.path.join(PROJECT_ROOT, "VERSION")) as f:
+            return f.read().strip()
+    except OSError:
+        return "unknown"
+
+
 def ensure_state_dirs():
     """Create the state directories if this is a fresh install."""
     os.makedirs(STATE_DIR, exist_ok=True)
