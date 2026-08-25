@@ -50,7 +50,11 @@ def slugify_name(full):
     parts = [re.sub(r"[^a-z]", "", p.lower()) for p in full.split() if p.strip()]
     parts = [p for p in parts if p]
     if not parts:
-        return "", "", ""
+        # Shape must match the populated case, or the caller's tuple unpack
+        # explodes. A plan with no hiring manager yet is a normal state - the
+        # research often happens after the application goes in - so this path
+        # has to stay walkable rather than crash the whole build.
+        return "", "", ("", "")
     first, last = parts[0], parts[-1]
     return first, last, (first[:1], last[:1])
 
@@ -109,6 +113,17 @@ def render(plan, identity):
 
     # Channel rule: reachable inbox -> email leads; filtered enterprise -> LinkedIn.
     primary, why = CHANNEL_RATIONALE.get(size, CHANNEL_RATIONALE["midsize"])
+
+    # A VERIFIED address beats the size heuristic. The heuristic exists only
+    # because a guessed address at a large company probably bounces - once the
+    # address is confirmed, that reasoning no longer applies, and email reaches
+    # a named person where LinkedIn reaches an inbox they may never open.
+    hm_list = plan.get("hiring_manager") or []
+    hm_list = [hm_list] if isinstance(hm_list, dict) else hm_list
+    if any(p.get("email") for p in hm_list):
+        primary = "email"
+        why = (f"{why.split(';')[0]} - but the hiring manager's address is VERIFIED, "
+               "so email goes direct rather than through a platform inbox")
 
     L = []
     a = L.append
@@ -190,10 +205,17 @@ def render(plan, identity):
 
     a("## Drafts")
     a("")
+    if not hm.get("name"):
+        a("> **No hiring manager identified yet.** The drafts below are complete except for the")
+        a("> recipient. Do the contact research first - a personalised note to nobody in")
+        a("> particular is just a slower cold application.")
+        a("")
     a("### 1. Email")
     a("")
     a("```")
-    a(f"To: {(hm.get('email') or (guess_emails(hm.get('name',''), hm.get('email_domain', domain), size) or [('','')])[0][1])}")
+    _guess = guess_emails(hm.get("name", ""), hm.get("email_domain", domain), size)
+    _to = hm.get("email") or (_guess[0][1] if _guess else "<verify the hiring manager first>")
+    a(f"To: {_to}")
     a(f"Subject: {role} ({identity['name']['full']})")
     a("")
     a(f"Hi {hm_first},")
