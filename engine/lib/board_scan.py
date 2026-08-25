@@ -150,15 +150,29 @@ def cmd_diff(args):
 # location posture). A missing/stale entry here means the sweep silently skipped
 # it — most of these are browser-only boards with no JSON API, which is exactly
 # why they got under-scanned historically. Extend as boards are seeded.
-CORE_BOARDS = [
-    # home-metro offices (browser-scan, highest miss risk)
-    "amazon", "microsoft", "starbucks", "expedia", "ebay", "tmobile",
-    "chewy", "alaskaair", "robinhood", "uber", "meta", "google",
-    # API-scannable Tier 1
-    "doordashusa", "stripe", "visa", "instacart", "affirm", "reddit",
-    "whatnot", "block", "salesforce",
-]
-STALE_DAYS = 3
+def _board_policy():
+    """Which boards must be covered every sweep, and how stale is too stale.
+
+    These come from config/search.json, NOT from this file. They were hardcoded
+    here originally, which meant the shipped engine carried one user's board
+    list and warned everyone else about 21 companies they had never heard of.
+    Company names are not identity terms, so the pre-publish leak scan could
+    not catch it - instance CONFIGURATION is a separate class of leak from
+    instance identity, and only the engine/ test catches it: no name, no
+    employer, no city, no figure, no path.
+
+    A new user with no `boards.core` configured gets no warnings, which is
+    correct: the tool cannot know what your top tier is until you say.
+    """
+    try:
+        with open(os.path.join(paths.CONFIG_DIR, "search.json")) as f:
+            boards = json.load(f).get("boards", {})
+    except (OSError, ValueError):
+        boards = {}
+    return boards.get("core", []), int(boards.get("stale_days", 3))
+
+
+CORE_BOARDS, STALE_DAYS = _board_policy()
 
 def cmd_status(args):
     t = datetime.date.today()
@@ -187,7 +201,7 @@ def cmd_status(args):
         print(f"\nWARNING - core (Tier 1) boards not covered this cycle:")
         if missing: print(f"  never scanned: {', '.join(missing)}")
         if stale:   print(f"  stale (> {STALE_DAYS}d): {', '.join(stale)}")
-        print("  Scan these FIRST next run (job_board_scan_list.md: Tier 1 runs every sweep).")
+        print("  Scan these FIRST next run (see config/search.json -> boards.core).")
 
 
 def cmd_show(args):

@@ -68,5 +68,10 @@
     "outreach_scout_after_days": 2,
     "stale_application_days": 7,
     "outreach_window_days": 35
+  },
+  "boards": {
+    "_note": "Slugs that must be covered every sweep. board_scan.py status warns on any never scanned or older than stale_days. Start EMPTY and add boards as you verify them - see engine/templates/board_library.md for the five bars a top-tier board must clear.",
+    "core": [],
+    "stale_days": 3
   }
 }
