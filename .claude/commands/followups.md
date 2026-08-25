@@ -13,4 +13,10 @@ signature come from `profile/identity.json` → `voice`.
 5. Batch-present the drafts for approval rather than sending anything.
 6. Run Partial triage and `registry.py expire` for anything that has sat through the configured number of triage batches undecided.
 
+7. **Record every outcome you learned this run** — a rejection email, a screen booked, a role
+   gone quiet past the window. Use `/outcome`, and write notes a stranger could classify:
+   `rejection email after the screen`, not `closed`. The registry historically used one status
+   for both "we passed" and "they passed on us", and an unclassifiable note is unclassifiable
+   forever.
+
 Close with a 5-line pipeline summary.

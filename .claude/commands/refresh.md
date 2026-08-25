@@ -56,6 +56,24 @@ done
 Anything still unsent and failing gets regenerated with `build_package.py` rather than patched by
 hand.
 
+## Calibration — has anything become decidable?
+
+```bash
+python3 engine/lib/calibrate.py
+python3 engine/lib/calibrate.py --backfill   # rows whose outcome is unknown
+```
+
+Every judgement the system makes is a hypothesis: the fit verdict, the comp floor, the source
+ordering, the premise that outreach lifts response rate. This is the only thing that checks any
+of them.
+
+**Respect an INSUFFICIENT EVIDENCE label.** At small samples the right action is to report the
+counts and change nothing — acting on noise is worse than acting on instinct, because it feels
+justified. When a split does clear the bar, say what it implies and change the config, not the
+prose.
+
+Resolve any UNKNOWN rows while the memory is fresh. An unrecorded outcome is gone.
+
 ## Config drift
 
 - Does `config/search.json` still describe the search actually being run? Level, comp floor,

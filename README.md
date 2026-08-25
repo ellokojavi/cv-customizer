@@ -104,6 +104,13 @@ vanishes. Generating from your profile removes that bug class instead of auditin
 surfaces stale applications so they get an outreach attempt instead of rotting — because the
 response rate, not the application count, is what actually binds.
 
+**Checks its own advice against reality.** `/outcome` records what happened to each application,
+and `calibrate.py` reports whether the fit verdict, the source channel, or outreach had any
+observed relationship with advancing. Crucially it **refuses to overclaim**: any split too thin
+to read is labelled INSUFFICIENT EVIDENCE with the arithmetic shown, rather than ranked. Job-search
+samples are small and slow, and a tool that dresses up noise as a finding is worse than no tool —
+you would act on it.
+
 ---
 
 ## Finding roles, not just applying to them
@@ -201,6 +208,7 @@ a real half hour.
 | `/followups` | Post-application worklist: due actions, stale applies, outreach drafts |
 | `/reaudit <company>` | Re-check a built-but-unsent package against current rules |
 | `/hygiene` | Sweep for build junk, damaged files, and structural rot |
+| `/outcome` | Record what happened; calibrate the fit framework against real results |
 | `/refresh` | Periodic maintenance so profile, boards, and packages do not rot |
 
 ## A package is five files
@@ -232,6 +240,7 @@ python3 engine/lib/build_outreach.py --plan p.json -o "outreach plan.md"
 python3 engine/lib/extract_career.py <existing_cv.docx> -o profile/career.json
 
 python3 engine/lib/registry.py check|add|applied|followups|expire|sync
+python3 engine/lib/calibrate.py [--backfill]           # what actually converted
 python3 engine/lib/board_scan.py diff <slug> --ids "…" | status
 python3 engine/lib/publish.py --to ../public-copy      # assemble + refuse on any leak
 ```
