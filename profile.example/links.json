@@ -1,0 +1,32 @@
+{
+  "_layer": "IDENTITY (EXAMPLE). The canonical anchor-to-URL table the CV is rebuilt from on every build.",
+  "_why_this_exists": "Because copying the previous application's DOCX carries forward DRIFTED links. Copying preserves formatting, not link correctness: a press link silently becomes a homepage, a keynote becomes a marketing page, and half the set quietly goes missing. Re-derive from this file on every build instead of trusting the base document.",
+
+  "_rules": [
+    "Partial-text anchor only: link the product, press, or talk word - never the whole title or company line.",
+    "Never link a generic company homepage. It reads as filler and tells a reader nothing.",
+    "Link an anchor only if that text survives in the final CV; if a bullet was cut, its link drops too.",
+    "Target range lives in config/documents.json under links.min / links.max."
+  ],
+
+  "_note_on_the_first_three": "These match the placeholder links already embedded in engine/templates/cv/cv_template_01.docx, so a fresh install audits clean before you have changed anything. Replace them with your own and the template's placeholders will then correctly fail the audit - which is the signal to update the template too.",
+
+  "canonical": {
+    "LinkedIn": "https://www.linkedin.com/in/username/",
+    "GitHub": "https://github.com/username",
+    "reference": "https://example.com/reference",
+    "conference talk": "https://example.com/talks/scaling-the-data-platform",
+    "launch coverage": "https://example.com/press/nightjar-launch",
+    "open-source project": "https://github.com/example-alex/example-project",
+    "industry panel": "https://example.com/events/2025-data-panel"
+  },
+
+  "_never_link": [
+    "Any generic company homepage",
+    "Anything login-gated",
+    "Repos you would not want a hiring manager to actually read"
+  ],
+
+  "deny_substrings": ["example-cdn.com", "aggregator.example"],
+  "_deny_rationale": "Put URLs here that your base document keeps reintroducing in place of the canonical one. The auditor hard-fails on these, which is the only reliable way to stop a link from silently regressing build after build."
+}

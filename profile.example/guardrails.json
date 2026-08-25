@@ -1,0 +1,53 @@
+{
+  "_layer": "IDENTITY (EXAMPLE). The never-claim list, in machine-checkable form. engine/lib/check_cv.py enforces these on every CV and cover letter.",
+  "_how_to_write_your_own": "The highest-value question in setup is: what would a JD ask for that you would have to admit you have not done? Every honest answer becomes a guardrail. These are the rules that stop the system lying on your behalf when it is optimizing for a keyword match.",
+  "_schema": {
+    "pattern": "regex that, if found, is a violation",
+    "message": "what is wrong AND what the truth is - the message is what you will read at 1am, so make it useful",
+    "allow_context": "optional regex; if it matches the window around an occurrence, THAT occurrence is exonerated",
+    "requires": "optional regex; if it matches anywhere in the document, the rule does not fire at all",
+    "ignore_case": "optional bool"
+  },
+  "_working_rule": "A guardrail firing on legitimate text is a bug in the PATTERN, not in the CV. Add the case to guardrail_tests.json, then loosen allow_context here. NEVER reword a CV to slip past a guardrail - that inverts the whole mechanism.",
+  "guardrails": [
+    {
+      "_demonstrates": "TITLE CEILING, with the two exemptions you will actually need: naming the role you are applying FOR, and naming a senior stakeholder you worked WITH.",
+      "pattern": "\\bVP\\b|\\bVice President\\b|\\bSVP\\b",
+      "allow_context": "(?:(?:applying for|application for|apply(?:ing)? to|the|this|your|open|posting for|Re:|Subject:)[,\\s]+(?:VP|SVP|Vice President)[^.]{0,70}\\b(?:role|position|opening|opportunity|req)\\b)|(?:(?:VP|SVP|Vice President)[\\s,]+(?:stakeholders?|alignment|partners?|peers?|leaders?|leadership|sponsors?|counterparts?))|(?:(?:with|for|across|to|and)\\s+(?:VP|SVP)\\b)",
+      "message": "VP/SVP self-label: highest real title is Director of Data Platform"
+    },
+    {
+      "_demonstrates": "A FIGURE THAT DRIFTED. Old CVs keep resurrecting a stale number; pin the wrong one and state the right one.",
+      "pattern": "\\$\\s?[45]00[Kk]\\b",
+      "message": "stale platform cost-savings figure: the defensible number is ~$250K/yr"
+    },
+    {
+      "_demonstrates": "A TOOL NEVER USED HANDS-ON. Keyword-matching will happily add these; you cannot defend them in an interview.",
+      "pattern": "\\bKafka\\b|\\bFlink\\b",
+      "message": "streaming tooling never used hands-on: batch pipelines and Airflow only"
+    },
+    {
+      "_demonstrates": "A CLAIM SOMEONE ELSE OWNED, with a negation exemption so an honest disclaimer still passes.",
+      "pattern": "\\bP&L\\b",
+      "allow_context": "\\b(?:not|never|no|without|didn't|did not|haven't|have not|has not)\\b(?:\\W+\\w+){0,5}\\W+P&L",
+      "message": "P&L ownership claim: the business unit owned P&L, not the platform team"
+    },
+    {
+      "_demonstrates": "A TERM THAT MUST BE DEFINED at first mention. Uses `requires`: the rule stands down entirely if the definition appears anywhere.",
+      "pattern": "\\bNightjar\\b",
+      "requires": "Nightjar[^.]{0,140}internal (?:data )?catalog",
+      "message": "Nightjar must be defined as the internal data catalog at first mention - it means nothing to an outside reader"
+    },
+    {
+      "_demonstrates": "A TENURE FIGURE that must stay consistent - with the exemption you WILL need. Durations appear all over a CV ('10 years later', 'over 3 years') and only the candidate's own tenure is the claim being guarded.",
+      "pattern": "\\b(?:[5-9]|1[01])\\s+years\\b",
+      "message": "experience is always stated as 12 years",
+      "allow_context": "(?:\\d+\\s+years\\s+(?:later|of|in\\s+production|running))|(?:(?:over|across|for|within|after)\\s+(?:~)?\\d+\\s+years)"
+    },
+    {
+      "_demonstrates": "A BANNED WORD. Delete this rule if your setup allows 'Present' in date ranges.",
+      "pattern": "\\bPresent\\b",
+      "message": "'Present' in a date range: use the configured Mon YYYY - Mon YYYY format"
+    }
+  ]
+}

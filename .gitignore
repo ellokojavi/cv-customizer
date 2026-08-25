@@ -1,0 +1,27 @@
+# Your data. None of this belongs in the product repo.
+profile/
+_registry/
+state/
+
+# Your live config - copy the .example files and edit those.
+config/*.json
+!config/*.example.json
+
+# Your applications
+[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] */
+
+# Local runtime config (holds absolute machine paths)
+.claude/settings.json
+.claude/settings.local.json
+
+# Build junk. pdftoppm prefixes its output, hence the leading wildcard.
+.~lock.*#
+lu*.tmp
+*.tmp
+*page-*.jpg
+*page-*.jpeg
+*page-*.png
+~$*
+.DS_Store
+__pycache__/
+*.pyc

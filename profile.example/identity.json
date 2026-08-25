@@ -1,0 +1,48 @@
+{
+  "_layer": "IDENTITY (EXAMPLE). Copy this directory to profile/ and replace every value with your own. profile/ is git-ignored and never ships; this example does.",
+  "_who": "Alex Moreno is fictional. The point of this file is the SHAPE, and especially the fact that a title ceiling, an employment status, and an auto-reject list are things the system needs stated explicitly rather than inferred.",
+
+  "name": {
+    "full": "Alex Moreno",
+    "first": "Alex",
+    "filename_slug": "Moreno_Alex"
+  },
+
+  "contact": {
+    "email": "alex.moreno@example.com",
+    "linkedin": "https://www.linkedin.com/in/username/",
+    "linkedin_short": "linkedin.com/in/username",
+    "github": "https://github.com/username",
+    "location": "Denver, CO"
+  },
+
+  "source_documents": {
+    "career_context": "profile/source/career_context.docx",
+    "_career_context_note": "PRIMARY source of truth for every metric, date, scope claim, and codename. Read before any fit assessment or build. Put your own career document here - a detailed one beats a polished one.",
+    "profile_markdown": "profile/source/professional_profile.md",
+    "facts_guardrail": "profile/guardrails.json"
+  },
+
+  "title_ceiling": {
+    "highest_real_title": "Director of Data Platform",
+    "_rule": "State the highest title you actually held. You may APPLY to roles above it; your history is never inflated to match. This is the single most common way a tailored CV starts lying."
+  },
+
+  "employment_status": {
+    "currently_employed": true,
+    "most_recent_role_ended": null,
+    "_rule": "If you are not currently employed, set this false and give the end month. Some setups ban the word 'Present' in date ranges - see guardrails.json."
+  },
+
+  "auto_reject_employers": {
+    "Example Corp": "Left on bad terms; will not return. Auto-reject any Example Corp role.",
+    "_note": "Company-level exclusions are identity, not policy: they exist because of your history, not because of a search parameter. Delete this block if you have none."
+  },
+
+  "voice": {
+    "_reference": "Your own notes on how you write to strangers. Keep it short and specific.",
+    "signature": "name + linkedin.com/in/username",
+    "anchor": "the credential you most want a hiring manager to remember",
+    "_rule": "ONE honest closing ask. Never imply curiosity you do not have, never hedge with 'if there's good fit', never offer to be deflected to 'the right person'."
+  }
+}

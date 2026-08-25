@@ -1,0 +1,72 @@
+{
+  "_layer": "POLICY (EXAMPLE). Copy to config/search.json and replace every value with your own. Same shape, neutral defaults. These read as personal but are parameters: swap them and the same playbook retargets a different city, level, and field with no prose edits.",
+  "_consumed_by": [
+    ".claude/commands/daily-search.md",
+    ".claude/commands/jd.md",
+    "_registry/daily_search_playbook.md"
+  ],
+  "_source": "See QUICKSTART.md step 2.",
+  "level": {
+    "titles": [
+      "Sr Director",
+      "VP",
+      "Head of <your function>"
+    ],
+    "conditional_titles": [
+      "Director",
+      "Group <your function>"
+    ],
+    "equivalence_test": "Director and Group PM count ONLY if they manage managers, or hold multi-team / company-critical scope, OR clear the comp floor below. Genuine single-team IC roles are out.",
+    "comp_floor_base_usd": 200000,
+    "comp_floor_total_usd": 260000,
+    "comp_floor_exception": "If scope and domain are exceptional (e.g. early-stage GM-scope with real equity), a role below the floor may be surfaced - but the comp gap must be stated explicitly, never buried."
+  },
+  "geography": {
+    "_rule": "A HARD FILTER, not a preference. Discard other-metro hybrid/onsite, relocation-required, and remote-that-excludes the home state, even for exceptional domain fit.",
+    "metro": "<Your metro>",
+    "home_state": "<XX>",
+    "accepts": [
+      "metro-area hybrid",
+      "metro-area onsite",
+      "remote that explicitly includes the home state"
+    ],
+    "rejects": [
+      "other-metro hybrid or onsite",
+      "relocation required",
+      "remote excluding the home state",
+      "international relocation"
+    ],
+    "linkedin": {
+      "metro_geo_id": "<LinkedIn geoId for your metro - copy from a filtered search URL>",
+      "metro_worktype_filter": "f_WT=1,3",
+      "national_remote_worktype_filter": "f_WT=2,3"
+    }
+  },
+  "domains_priority": [
+    "<your strongest domain>",
+    "<second>",
+    "<third>",
+    "<expansion domain - volume, not a licence to stretch>"
+  ],
+  "_domains_note": "Ranked. The last three are volume expansion, not a licence to stretch.",
+  "cadence": {
+    "full_scan_every_run": true,
+    "_full_scan_rule": "A differential search filters for NEW postings within each source; it never skips whole sources or defers a tier to a multi-day rotation. If tight on time, scan every source shallower rather than dropping any.",
+    "first_tier_each_run": "Tier B (home-metro HQ, hybrid) - clears the location bar by default and is easy to under-scan because those boards expose no JSON API",
+    "source_order": [
+      "Tier B home-metro hybrid boards",
+      "LinkedIn top-applicant collection",
+      "inbox mining (mandatory)",
+      "Tier A remote-first boards",
+      "Tiers D/E (VC-portfolio, local ecosystem)",
+      "WebSearch fan-out (secondary; aggregator cache rots)"
+    ],
+    "daily_application_target": "2-3 viable applications",
+    "partial_triage_expiry_batches": 2
+  },
+  "post_application": {
+    "outreach_scout_after_days": 2,
+    "stale_application_days": 7,
+    "outreach_window_days": 35
+  }
+}

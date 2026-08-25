@@ -1,0 +1,95 @@
+{
+  "_layer": "IDENTITY (EXAMPLE). The structured career record build_cv.py renders. Replace every value with your own.",
+  "_how_to_seed_this": "Do not type it from scratch. If you already have a CV you trust, extract it: python3 engine/lib/extract_career.py <your_cv.docx> -o profile/career.json — then edit. Retyping introduces exactly the drift the generator exists to prevent.",
+  "_consistency": "Every claim here satisfies profile.example/guardrails.json: Director (never VP), 12 years, ~$250K savings, Airflow and dbt rather than Kafka or Flink, Nightjar defined as the internal data catalog, no P&L claim. That is the point — the data and the guardrails have to agree, and the auditor is what proves it.",
+
+  "header": {
+    "name": "ALEX MORENO",
+    "contact_line": "Denver, CO  |  alex.moreno@example.com  |  LinkedIn  |  GitHub: username  |  US Citizen"
+  },
+
+  "summary": "Data platform leader with 12 years building the systems analytics teams depend on, and a manager of managers since 2019. Owned the platform serving 400+ analysts across a company of 3,000, cutting infrastructure spend ~$250K/yr while halving pipeline failure rates. Built the data catalog that took dataset discovery from days to minutes. Rigorous on reliability, cost per query, and the unglamorous work of making data trustworthy.",
+
+  "competencies": [
+    "Data Platform Architecture",
+    "Batch Pipeline Orchestration",
+    "Data Governance & Lineage",
+    "Cost Optimization",
+    "Analytics Enablement",
+    "Platform Reliability & SLOs",
+    "Building & Developing Engineering Teams",
+    "Stakeholder & Executive Communication"
+  ],
+
+  "experience": [
+    {
+      "title": "Director of Data Platform",
+      "dates": "Mar 2021 - Aug 2026",
+      "company": "Northwind Analytics",
+      "location": "Denver, CO",
+      "bullets": [
+        "Owned the data platform serving 400+ analysts across 12 business units, setting the three-year roadmap and reducing infrastructure spend by ~$250K/yr through query optimization and storage tiering.",
+        "Built and developed a 14-person platform team across 3 sub-teams, growing 4 engineers into tech leads and cutting median incident response from 45 to 12 minutes.",
+        "Shipped Nightjar, our internal data catalog, to 400 analysts; dataset discovery dropped from ~2 days to under 10 minutes and duplicate pipeline builds fell 60%."
+      ]
+    },
+    {
+      "title": "Senior Manager, Data Engineering",
+      "dates": "Jun 2018 - Mar 2021",
+      "company": "Meridian Retail Group",
+      "location": "Denver, CO",
+      "bullets": [
+        "Led a 9-engineer team rebuilding batch pipelines on Airflow and dbt, taking pipeline success rate from 91% to 99.4% across 300+ nightly jobs.",
+        "Cut warehouse costs 38% ($410K to $255K annually) by partitioning the 20 largest tables and retiring 140 unused models."
+      ]
+    },
+    {
+      "title": "Data Engineering Manager",
+      "dates": "Jan 2016 - Jun 2018",
+      "company": "Cascade Logistics",
+      "location": "Portland, OR",
+      "bullets": [
+        "Managed 5 engineers delivering the first company-wide reporting layer, replacing 40+ spreadsheets with a modeled warehouse used by every department."
+      ]
+    },
+    {
+      "title": "Senior Data Engineer",
+      "dates": "Aug 2014 - Jan 2016",
+      "company": "Cascade Logistics",
+      "location": "Portland, OR",
+      "bullets": [
+        "Built the ingestion framework handling 1.2B rows/day from 30+ source systems, still in production 10 years later."
+      ]
+    }
+  ],
+
+  "education": [
+    {
+      "institution": "Colorado School of Applied Science",
+      "date": "May 2014",
+      "detail": "M.S. Computer Science  |  Focus: Distributed Systems",
+      "location": "Golden, CO"
+    },
+    {
+      "institution": "State University",
+      "date": "May 2012",
+      "detail": "B.S. Mathematics  |  Minor: Economics",
+      "location": "Fort Collins, CO"
+    }
+  ],
+
+  "additional": [
+    {
+      "label": "Open Source & Building",
+      "text": "Maintainer of an open-source project for pipeline testing; occasional contributor to the tooling this team runs on."
+    },
+    {
+      "label": "Technical Depth",
+      "text": "SQL, Python, Airflow, dbt, Snowflake, BigQuery, Terraform, Looker; dimensional modeling, incremental materialization, data contracts, SLO design."
+    },
+    {
+      "label": "Speaking & Mentorship",
+      "text": "Spoke at a regional data conference on catalog adoption; mentored 20+ engineers through an internal apprenticeship program."
+    }
+  ]
+}
